@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import filedialog
 import socket
 
-
 # Data to be sent - hardcoded value for now  - can change to the data read from file
 # data = input("Enter data to send: ").encode()
 
