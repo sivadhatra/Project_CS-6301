@@ -1,6 +1,15 @@
 import tkinter as tk
 from tkinter import filedialog
 import socket
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+import os
+
+
+def encrypt(text, key):
+    cp = AES.new(key, AES.MODE_CBC)
+    cp_text = cp.encrypt(pad(text.encode(), AES.block_size))
+    return cp.iv + cp_text
 
 # Data to be sent - hardcoded value for now  - can change to the data read from file
 # data = input("Enter data to send: ").encode()
@@ -16,15 +25,27 @@ def select_file():
             print("Error reading file")
 
 
+def get_key():
+    try:
+        with open('key.txt', 'r') as f:
+            v = f.read()
+            key = bytes.fromhex(v)
+            return key
+    except:
+        print("Error reading file")
+
+
 def send_data(data):
+    print("Sending data:", data)
+    data = encrypt(data,get_key())
     # Configuration
     HOST = 'localhost'
     PORT = 8000
     # Connect to Microservice 2
     receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     receiver_socket.connect((HOST, PORT))
-    print("Sending data:", data)
-    receiver_socket.sendall(data.encode())
+    # receiver_socket.sendall(data)#.encode()) 
+    receiver_socket.sendall(data)
     receiver_socket.close()
     
 
